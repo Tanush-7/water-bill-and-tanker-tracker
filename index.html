@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:,">
+<title>Water Bill and Tanker Tracker — Bengaluru</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef3f1; --surface:#ffffff; --surface2:#e6efec; --ink:#132724; --muted:#5a6d68; --line:#d3ddd9;
+  --teal:#0d6e6a; --teal-dark:#093f3d; --teal-light:#d9ece8; --amber:#b7791f; --amber-bg:#fdf0d5; --red:#b42318; --red-bg:#fde8e5; --green:#14743c; --green-bg:#dcf2e3;
+  --accent:#e85d2a;
+  --radius:14px;
+}
+@media(prefers-color-scheme:dark){
+  :root{ --bg:#0d1a18; --surface:#162824; --surface2:#1e342f; --ink:#e8f2ef; --muted:#a7bcb6; --line:#2b4440; --teal:#3ec2b8; --teal-dark:#a7e8e1; --teal-light:#1d3d38; --amber-bg:#3a2f14; --red-bg:#3d1d1a; --green-bg:#163826; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Public Sans",system-ui,sans-serif;line-height:1.55}
+a{color:var(--teal)}
+h1,h2,h3{font-family:"Archivo",sans-serif;line-height:1.05;margin:0}
+.mono{font-family:"IBM Plex Mono",monospace}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px 56px}
+.hero{padding:34px 0 8px}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);font-weight:700}
+.hero h1{font-size:clamp(38px,6vw,66px);font-weight:900;letter-spacing:-.03em;max-width:820px;margin:10px 0 12px}
+.hero h1 span{color:var(--teal);text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:5px;text-underline-offset:6px}
+.lede{font-size:17px;color:var(--muted);max-width:720px;margin:0}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.pill{font-size:12.5px;font-weight:600;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 12px}
+.verdict{margin-top:26px;background:var(--teal-dark);color:#effffc;border-radius:18px;padding:22px;display:grid;grid-template-columns:1.3fr .9fr;gap:20px}
+@media(prefers-color-scheme:dark){.verdict{background:#122f2b}}
+.verdict h2{color:#fff;font-size:22px;margin-bottom:6px}
+.verdict p{color:#bfe3dd;margin:0;font-size:14.5px}
+.big{font-family:"Archivo";font-size:44px;font-weight:900;line-height:1}
+.badge{display:inline-flex;font-weight:800;font-size:13px;padding:7px 11px;border-radius:999px;margin-bottom:10px}
+.badge.fair{background:var(--green-bg);color:var(--green)} .badge.high{background:var(--amber-bg);color:var(--amber)} .badge.over{background:var(--red-bg);color:var(--red)}
+.verdict .badge.fair{background:#1d5c36;color:#bff0cd}.verdict .badge.high{background:#5a4010;color:#ffe1a0}.verdict .badge.over{background:#6b211c;color:#ffc4bd}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+@media(max-width:820px){.grid,.verdict{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.card h2{font-size:21px;margin-bottom:4px}.card h3{font-size:16px}
+.sub{color:var(--muted);font-size:14px;margin:4px 0 16px}
+label{font-size:12.5px;font-weight:700;letter-spacing:.02em;display:block;margin:14px 0 6px}
+input,select,textarea{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;font-size:15px}
+input:focus,select:focus{outline:2px solid var(--teal);outline-offset:1px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:520px){.row2{grid-template-columns:1fr}}
+input[type=range]{padding:0;border:none;accent-color:var(--teal)}
+.bar-wrap{margin-top:16px}
+.bar-label{display:flex;justify-content:space-between;font-size:12.5px;font-weight:600;margin-bottom:6px}
+.bar{height:14px;border-radius:99px;background:var(--surface2);overflow:hidden;display:flex}
+.bar .fairpart{background:var(--teal)} .bar .extrapart{background:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.stat{background:var(--surface2);border-radius:10px;padding:12px}.stat b{display:block;font-size:19px;font-family:"Archivo"}.stat span{font-size:12px;color:var(--muted)}
+@media(max-width:520px){.stats{grid-template-columns:1fr 1fr}}
+.btn{appearance:none;border:none;cursor:pointer;font:inherit;font-weight:700;border-radius:10px;padding:12px 16px;background:var(--teal-dark);color:#fff}
+@media(prefers-color-scheme:dark){.btn{background:var(--teal);color:#06201e}}
+.btn.secondary{background:var(--surface);color:var(--ink);border:1.5px solid var(--line)}
+.btn.orange{background:var(--accent);color:#fff}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:10px 8px;border-bottom:2px solid var(--line)}
+td{padding:11px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+@media(max-width:640px){ table,thead,tbody,tr,td{display:block;width:100%} thead{display:none} tr{border:1px solid var(--line);border-radius:10px;padding:8px;margin-bottom:10px} td{border:none;padding:5px 6px} td::before{content:attr(data-l);display:block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}}
+.flag{font-size:12px;font-weight:800;padding:4px 8px;border-radius:999px;white-space:nowrap}.f-green{background:var(--green-bg);color:var(--green)}.f-amber{background:var(--amber-bg);color:var(--amber)}.f-red{background:var(--red-bg);color:var(--red)}.f-grey{background:var(--surface2);color:var(--muted)}
+.logitem{display:flex;gap:12px;justify-content:space-between;border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:10px;background:var(--surface)}
+.logitem h4{margin:0;font-size:15px}.logitem p{margin:3px 0 0;color:var(--muted);font-size:13.5px}
+.del{border:1px solid var(--line);background:transparent;color:var(--red);border-radius:8px;padding:6px 10px;cursor:pointer;font-weight:700;height:fit-content}
+.empty{border:1.5px dashed var(--line);border-radius:12px;padding:20px;text-align:center;color:var(--muted);margin-top:12px}
+.checklist{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:10px}
+.checklist li{display:flex;gap:11px;background:var(--surface2);border-radius:10px;padding:12px;font-size:14.5px}
+.num{flex:0 0 26px;height:26px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px}
+.msgbox{background:var(--surface2);border-radius:10px;padding:14px;font-size:14.5px;white-space:pre-wrap}
+.note{font-size:12.5px;color:var(--muted);margin-top:12px}
+.section{margin-top:26px}
+.chartbox{margin-top:14px}
+footer{margin-top:30px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:16px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:700;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:20}.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="eyebrow">Bengaluru · For tenants &amp; small households</div>
+    <h1>Is your landlord <span>overcharging</span> for water?</h1>
+    <p class="lede">Log every BWSSB bill, society charge and tanker delivery in one place. The tracker works out what two people should fairly pay, shows your cost per litre, and flags the months where the number does not add up.</p>
+    <div class="hero-meta"><span class="pill">Built for 1–4 person homes</span><span class="pill">Tanker sizes: 6,000 L &amp; 12,000 L</span><span class="pill">Areas: Whitefield to RR Nagar</span></div>
+
+    <div class="verdict" aria-live="polite">
+      <div>
+        <div id="verdictBadge" class="badge high">CHECK A CHARGE BELOW</div>
+        <h2 id="verdictTitle">₹1,200 for two people — let’s test it</h2>
+        <p id="verdictText">Change the charge, household size and supply type on the left. The verdict, fair range and yearly overpay update instantly.</p>
+      </div>
+      <div>
+        <div style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;opacity:.75;font-weight:700">If this repeats every month</div>
+        <div class="big" id="yearOverpay">₹0<span style="font-size:18px"> / yr extra</span></div>
+        <p style="margin-top:8px">Fair range for your setup: <strong id="fairRange" style="color:#fff">—</strong><br>Your charge per person: <strong id="perPerson" style="color:#fff">—</strong></p>
+      </div>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- CHECKER -->
+    <section class="card" aria-labelledby="check-h">
+      <h2 id="check-h">1 · Check a charge</h2>
+      <p class="sub">What you were asked to pay this month, against what the water itself should cost.</p>
+      <div class="row2">
+        <div><label for="people">People in the home</label><select id="people"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select></div>
+        <div><label for="area">Area in Bengaluru</label><select id="area"><option>Whitefield / Varthur</option><option>HSR Layout</option><option>Koramangala</option><option>Bellandur / Sarjapur</option><option>Electronic City</option><option>Hebbal / Yelahanka</option><option>JP Nagar / Bannerghatta Rd</option><option>RR Nagar / Kengeri</option><option>Other</option></select></div>
+      </div>
+      <label for="charge">Monthly water charge you were asked to pay (₹)</label>
+      <input id="charge" type="number" min="0" step="10" value="1200">
+      <label for="supply">Where does your water mainly come from?</label>
+      <select id="supply">
+        <option value="bwssb">BWSSB + borewell (most apartments)</option>
+        <option value="mixed" selected>Mixed — BWSSB/borewell + occasional tankers</option>
+        <option value="tanker">Mostly tankers (common in Whitefield, Sarjapur, Varthur)</option>
+      </select>
+      <label for="usage">Daily use per person: <span class="mono" id="usageLabel">100 litres</span></label>
+      <input id="usage" type="range" min="60" max="180" step="5" value="100">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)"><span>Careful · 60 L</span><span>Typical · 100 L</span><span>BWSSB norm · 135 L</span><span>High · 180 L</span></div>
+
+      <div class="bar-wrap">
+        <div class="bar-label"><span>Fair cost</span><span>Extra over fair cost</span></div>
+        <div class="bar"><div class="fairpart" id="barFair" style="width:60%"></div><div class="extrapart" id="barExtra" style="width:40%"></div></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><span>Est. monthly use</span><b id="litresOut">6,000 L</b></div>
+        <div class="stat"><span>Fair cost / 1,000 L</span><b id="perKlOut">—</b></div>
+        <div class="stat"><span>You pay / 1,000 L</span><b id="yourKlOut">—</b></div>
+      </div>
+      <p class="note">How the fair cost is built: BWSSB domestic slabs for piped water (₹7 / 1,000 L up to 8,000 L, ₹11 up to 25,000 L, ₹26 up to 50,000 L, plus 25% sanitary charge and a fixed meter charge), tanker water at ₹110–₹125 / 1,000 L, plus ₹180–₹220 for society pumping and maintenance. It is an estimate to start a conversation, not a legal tariff ruling.</p>
+    </section>
+
+    <!-- ADD LOG -->
+    <section class="card" aria-labelledby="add-h">
+      <h2 id="add-h">2 · Add a bill or tanker</h2>
+      <p class="sub">One row per bill or delivery. The flags below use cost per 1,000 litres, so inflated tanker rates stand out fast.</p>
+      <div class="row2">
+        <div><label for="month">Month</label><input id="month" type="month" value="2026-11"></div>
+        <div><label for="type">Type</label><select id="type"><option>Society water charge</option><option>BWSSB bill</option><option>Tanker delivery</option><option>Landlord flat charge</option><option>Borewell / maintenance share</option></select></div>
+      </div>
+      <div class="row2">
+        <div><label for="litres">Litres (if known)</label><input id="litres" type="number" min="0" step="100" placeholder="e.g. 6000 for one tanker"></div>
+        <div><label for="amount">Amount paid (₹)</label><input id="amount" type="number" min="0" step="10" placeholder="e.g. 850"></div>
+      </div>
+      <label for="paidto">Paid to / supplier (optional)</label>
+      <input id="paidto" type="text" placeholder="Society, landlord, tanker supplier name">
+      <label for="notes">Note (optional)</label>
+      <input id="notes" type="text" placeholder="e.g. Summer rate, no receipt given, meter photo taken">
+      <div class="btnrow"><button class="btn orange" id="addBtn">Add to log</button><button class="btn secondary" id="exampleBtn">Fill a tanker example</button></div>
+      <p class="note">Entries live in this tab only. Download the CSV below before you close it if you want to keep the record.</p>
+
+      <div class="stats">
+        <div class="stat"><span>Total logged</span><b id="totalLogged">₹0</b></div>
+        <div class="stat"><span>Average / month</span><b id="avgMonth">₹0</b></div>
+        <div class="stat"><span>Tanker share</span><b id="tankerShare">0%</b></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- LOG + CHART -->
+  <section class="card section" aria-labelledby="log-h">
+    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:start">
+      <div><h2 id="log-h">3 · Your log</h2><p class="sub" style="margin-bottom:0">Sorted newest first. A red flag does not prove overcharging on its own — it tells you which bill to ask for a receipt for.</p></div>
+      <div class="btnrow" style="margin-top:0"><button class="btn secondary" id="csvBtn">Download CSV</button><button class="btn secondary" id="clearBtn">Clear log</button></div>
+    </div>
+    <div class="chartbox" id="chartBox"></div>
+    <div id="logList"></div>
+    <div class="empty" id="emptyState">No entries yet.<br>Add your latest society charge or tanker delivery above — for two people, even one month is enough to spot a pattern.</div>
+  </section>
+
+  <div class="grid section">
+    <section class="card">
+      <h2>Bengaluru price guide</h2>
+      <p class="sub">Typical ranges in 2026. Summer (March–June) and low-rainfall weeks push tanker rates to the top end.</p>
+      <table>
+        <thead><tr><th>Item</th><th>Typical</th><th>Watch out above</th></tr></thead>
+        <tbody>
+          <tr><td data-l="Item"><strong>6,000 L tanker</strong></td><td data-l="Typical">₹500–₹900</td><td data-l="Watch out">₹1,100</td></tr>
+          <tr><td data-l="Item"><strong>12,000 L tanker</strong></td><td data-l="Typical">₹1,000–₹1,700</td><td data-l="Watch out">₹2,000</td></tr>
+          <tr><td data-l="Item"><strong>Tanker rate / 1,000 L</strong></td><td data-l="Typical">₹85–₹140</td><td data-l="Watch out">₹170</td></tr>
+          <tr><td data-l="Item"><strong>2 people, BWSSB home</strong></td><td data-l="Typical">₹250–₹550 / month</td><td data-l="Watch out">₹900 / month</td></tr>
+          <tr><td data-l="Item"><strong>2 people, tanker-heavy home</strong></td><td data-l="Typical">₹700–₹1,200 / month</td><td data-l="Watch out">₹1,800 / month</td></tr>
+        </tbody>
+      </table>
+      <p class="note">If your building has no individual meter, societies usually split the total water cost by flat or by headcount. Ask which method yours uses — a 2-person flat should not pay the same as a 5-person flat under a per-person split.</p>
+    </section>
+
+    <section class="card">
+      <h2>Verify before you pay</h2>
+      <p class="sub">Five checks that settle most disputes in one message.</p>
+      <ul class="checklist">
+        <li><span class="num">1</span><span><strong>Ask for the actual bill.</strong> BWSSB bill or society water invoice for that month, not a typed total on WhatsApp.</span></li>
+        <li><span class="num">2</span><span><strong>Ask how it was split.</strong> Per flat, per person, or by meter reading — and how many flats/people it was split across.</span></li>
+        <li><span class="num">3</span><span><strong>Count the tankers.</strong> Number of deliveries × size × rate should match the tanker line. Societies usually keep a gate register.</span></li>
+        <li><span class="num">4</span><span><strong>Photo the meter.</strong> If you have a sub-meter, take a dated photo on the 1st of each month.</span></li>
+        <li><span class="num">5</span><span><strong>Compare per 1,000 L.</strong> Anything above ₹170 / 1,000 L for tanker water needs a reason: distance, summer, or a small load.</span></li>
+      </ul>
+    </section>
+  </div>
+
+  <section class="card section">
+    <h2>Message you can send</h2>
+    <p class="sub">Polite, specific, and built from your checker numbers above. Copy and paste into WhatsApp or email.</p>
+    <div class="msgbox" id="msgBox"></div>
+    <div class="btnrow"><button class="btn" id="copyBtn">Copy message</button></div>
+  </section>
+
+  <footer>Benchmarks are typical Bengaluru ranges for planning and negotiation, not official BWSSB tariffs — confirm the current slab on your actual bill. This page does not upload your entries anywhere.</footer>
+</div>
+<div class="toast" id="toast">Copied</div>
+
+<script>
+var entries = [];
+function fmt(n){ return '₹' + Math.round(n).toLocaleString('en-IN'); }
+function bwssbCost(litres){
+  var kl = litres/1000, cost=0, rem=kl;
+  var slabs=[[8,7],[17,11],[25,26],[Infinity,45]];
+  for(var i=0;i<slabs.length;i++){ var take=Math.min(rem, slabs[i][0]); if(take<=0) break; cost+=take*slabs[i][1]; rem-=take; }
+  return cost*1.25 + 100; // +25% sanitary, + fixed meter/service charge approx
+}
+function calc(){
+  var people = parseInt(document.getElementById('people').value,10);
+  var charge = parseFloat(document.getElementById('charge').value)||0;
+  var supply = document.getElementById('supply').value;
+  var lpcd = parseInt(document.getElementById('usage').value,10);
+  document.getElementById('usageLabel').textContent = lpcd + ' litres';
+  var litres = people * lpcd * 30;
+  var piped = bwssbCost(litres);
+  var centre;
+  if(supply==='bwssb') centre = piped + 180; // + society pumping share
+  else if(supply==='mixed') centre = piped*0.6 + (litres/1000)*110*0.4 + 220;
+  else centre = (litres/1000)*125 + 220;
+  var low = centre*0.85, high = centre*1.18;
+  var badge=document.getElementById('verdictBadge'), title=document.getElementById('verdictTitle'), text=document.getElementById('verdictText');
+  var over = Math.max(0, charge - high);
+  var cls, label;
+  if(charge<=high){ cls='fair'; label='LOOKS FAIR'; }
+  else if(charge<=centre*1.6){ cls='high'; label='ON THE HIGH SIDE'; }
+  else { cls='over'; label='OVERCHARGE LIKELY'; }
+  badge.className='badge '+cls; badge.textContent=label;
+  title.textContent = fmt(charge)+' for '+people+(people===1?' person':' people')+' — '+(cls==='fair'?'within the fair range':cls==='high'?'above the fair range':'well above the fair range');
+  var overR = Math.round(over);
+  text.textContent = cls==='fair' ? 'This sits inside what the water, sanitary charge and normal society pumping should cost for your usage. Keep logging it so a sudden jump stands out.' : cls==='high' ? 'You are paying '+fmt(overR)+' over the top of the fair range this month. Worth asking for the bill and the split method before paying the next one.' : 'You are paying '+fmt(overR)+' over the top of the fair range. For this usage that needs a clear break-up: tanker count, rate per load, and how the total was split.';
+  document.getElementById('yearOverpay').innerHTML = fmt(overR*12)+'<span style="font-size:18px"> / yr extra</span>';
+  document.getElementById('fairRange').textContent = fmt(low)+' – '+fmt(high)+' / month';
+  document.getElementById('perPerson').textContent = fmt(charge/people)+' / month';
+  document.getElementById('litresOut').textContent = litres.toLocaleString('en-IN')+' L';
+  document.getElementById('perKlOut').textContent = fmt(centre/(litres/1000));
+  document.getElementById('yourKlOut').textContent = litres? fmt(charge/(litres/1000)) : '—';
+  var total=Math.max(charge, high, 1); document.getElementById('barFair').style.width=(Math.min(high,charge)/total*100)+'%'; document.getElementById('barExtra').style.width=(Math.max(0,charge-high)/total*100)+'%';
+  document.getElementById('msgBox').textContent = 'Hi, could you please share the water bill break-up for this month?\n\nI have been charged '+fmt(charge)+' for '+people+' people. Based on our estimated use of about '+litres.toLocaleString('en-IN')+' litres, the expected range works out to roughly '+fmt(low)+'–'+fmt(high)+', so I want to understand the difference.\n\nCould you share: (1) the BWSSB / society water bill, (2) the number and rate of tanker deliveries this month, and (3) how the total was split across flats or people?\n\nHappy to pay once I have the break-up. Thank you.';
+  return {low:low,high:high,centre:centre,litres:litres};
+}
+['people','charge','supply','usage','area'].forEach(function(id){ document.getElementById(id).addEventListener('input',calc); document.getElementById(id).addEventListener('change',calc); });
+
+function flagFor(e){
+  if(!e.litres || e.litres<=0) return '<span class="flag f-grey">NO LITRES LOGGED</span>';
+  var perKl = e.amount/(e.litres/1000);
+  if(e.type.indexOf('Tanker')>-1){ if(perKl>170) return '<span class="flag f-red">HIGH · '+fmt(perKl)+' / 1,000 L</span>'; if(perKl>140) return '<span class="flag f-amber">CHECK · '+fmt(perKl)+' / 1,000 L</span>'; return '<span class="flag f-green">FAIR · '+fmt(perKl)+' / 1,000 L</span>'; }
+  if(perKl>220) return '<span class="flag f-red">HIGH · '+fmt(perKl)+' / 1,000 L</span>';
+  if(perKl>150) return '<span class="flag f-amber">CHECK · '+fmt(perKl)+' / 1,000 L</span>';
+  return '<span class="flag f-green">FAIR · '+fmt(perKl)+' / 1,000 L</span>';
+}
+function monthLabel(m){ var p=m.split('-'); var names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return names[parseInt(p[1],10)-1]+' '+p[0]; }
+function render(){
+  var list=document.getElementById('logList'); list.innerHTML='';
+  document.getElementById('emptyState').style.display = entries.length? 'none':'block';
+  var sorted = entries.slice().sort(function(a,b){ return b.month.localeCompare(a.month); });
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  sorted.forEach(function(e){
+    var idx = entries.indexOf(e);
+    var div=document.createElement('div'); div.className='logitem';
+    div.innerHTML='<div><h4>'+monthLabel(e.month)+' · '+esc(e.type)+' — '+fmt(e.amount)+'</h4><p>'+(e.litres? e.litres.toLocaleString('en-IN')+' L':'Litres not logged')+(e.paidto?' · Paid to '+esc(e.paidto):'')+(e.notes?' · '+esc(e.notes):'')+'</p><p style="margin-top:7px">'+flagFor(e)+'</p></div>';
+    var b=document.createElement('button'); b.className='del'; b.textContent='Remove'; b.onclick=function(){ entries.splice(idx,1); render(); };
+    div.appendChild(b); list.appendChild(div);
+  });
+  var total=entries.reduce(function(s,e){return s+e.amount;},0);
+  var months={}; entries.forEach(function(e){ months[e.month]=(months[e.month]||0)+e.amount; });
+  var keys=Object.keys(months).sort();
+  document.getElementById('totalLogged').textContent=fmt(total);
+  document.getElementById('avgMonth').textContent= keys.length? fmt(total/keys.length):'₹0';
+  var tankerTotal=entries.filter(function(e){return e.type.indexOf('Tanker')>-1;}).reduce(function(s,e){return s+e.amount;},0);
+  document.getElementById('tankerShare').textContent= total? Math.round(tankerTotal/total*100)+'%':'0%';
+  // Chart
+  var box=document.getElementById('chartBox');
+  if(!keys.length){ box.innerHTML=''; return; }
+  var max=Math.max.apply(null, keys.map(function(k){return months[k];}));
+  var W=680,H=170, bw=Math.min(72,(W-20)/keys.length-14);
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Monthly water spend chart" style="max-width:100%">';
+  keys.forEach(function(k,i){ var h=Math.max(8,(months[k]/max)*(H-48)); var x=14+i*((W-20)/keys.length); var y=H-28-h;
+    svg+='<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+h+'" rx="5" fill="#0d6e6a"></rect>';
+    svg+='<text x="'+(x+bw/2)+'" y="'+(y-6)+'" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor">'+fmt(months[k])+'</text>';
+    svg+='<text x="'+(x+bw/2)+'" y="'+(H-8)+'" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.65">'+monthLabel(k)+'</text>';
+  });
+  svg+='</svg>'; box.innerHTML='<h3 style="margin-bottom:6px">Monthly total</h3>'+svg;
+}
+document.getElementById('addBtn').onclick=function(){
+  var month=document.getElementById('month').value; var amount=parseFloat(document.getElementById('amount').value);
+  if(!month || !amount || amount<=0){ showToast('Enter a month and an amount first'); return; }
+  entries.push({month:month, type:document.getElementById('type').value, litres:parseFloat(document.getElementById('litres').value)||0, amount:amount, paidto:document.getElementById('paidto').value.trim(), notes:document.getElementById('notes').value.trim()});
+  document.getElementById('amount').value=''; document.getElementById('litres').value=''; document.getElementById('notes').value='';
+  render(); showToast('Added to log');
+};
+document.getElementById('exampleBtn').onclick=function(){
+  document.getElementById('type').value='Tanker delivery'; document.getElementById('litres').value='6000'; document.getElementById('amount').value='1350'; document.getElementById('notes').value='Example — edit the rate to yours'; showToast('Example filled — tap Add to log to see the flag');
+};
+document.getElementById('clearBtn').onclick=function(){ entries=[]; render(); showToast('Log cleared'); };
+document.getElementById('csvBtn').onclick=function(){
+  if(!entries.length){ showToast('Nothing to download yet'); return; }
+  var csv='Month,Type,Litres,Amount INR,Per 1000L INR,Paid to,Notes\n'+entries.map(function(e){ var pk=e.litres? Math.round(e.amount/(e.litres/1000)):''; return [e.month,'"'+e.type+'"',e.litres||'',e.amount,pk,'"'+(e.paidto||'').replace(/"/g,'""')+'"','"'+(e.notes||'').replace(/"/g,'""')+'"'].join(','); }).join('\n');
+  var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='water-bill-tanker-log.csv'; a.click(); URL.revokeObjectURL(a.href);
+};
+document.getElementById('copyBtn').onclick=function(){
+  var t=document.getElementById('msgBox').textContent;
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(function(){showToast('Message copied');}); } else { showToast('Select the text and copy it'); }
+};
+function showToast(m){ var t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},2200); }
+calc(); render();
+</script>
+</body>
+</html>
